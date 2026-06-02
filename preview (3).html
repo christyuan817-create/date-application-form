@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>约会申请表</title>
+<style>
+  body {
+    font-family: "Microsoft YaHei", sans-serif;
+    background: #fff7f5;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    width: 95%;
+    max-width: 480px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  h1 {text-align:center;color:#ff6b81;font-size:24px;margin-bottom:5px;}
+  h2 {text-align:center;font-size:14px;color:#ff9aa2;margin-bottom:20px;}
+  label {display:block;margin-bottom:15px;color:#333;}
+  input[type="text"], input[type="datetime-local"], textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ffd6d9;
+    box-sizing: border-box;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  textarea {resize: vertical;}
+  .checkbox-group, .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  .checkbox-group div, .radio-group div {
+    background: #ffe8e6;
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .checkbox-group div.active, .radio-group div.active {background: #ff6b81;color:#fff;}
+  button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 15px;
+    background: #ff6b81;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.1s;
+  }
+  button:active {transform: scale(0.96);}
+  .approval {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 15px;
+    background: #fff0f0;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>约会申请表</h1>
+  <h2>提交给女朋友审批专用</h2>
+
+  <form id="dateForm">
+    <label>申请人昵称：
+      <input type="text" name="nickname" placeholder="请输入昵称" required>
+    </label>
+
+    <label>约会类型：</label>
+    <div class="checkbox-group" id="typeGroup">
+      <div data-value="吃饭">吃饭</div>
+      <div data-value="看电影">看电影</div>
+      <div data-value="散步">散步</div>
+      <div data-value="奶茶">奶茶</div>
+      <div data-value="逛街">逛街</div>
+      <div data-value="其他">其他</div>
+    </div>
+
+    <label>申请时间：
+      <input type="datetime-local" name="time" required>
+    </label>
+
+    <label>约会地点：
+      <input type="text" name="location" placeholder="请输入约会地点" required>
+    </label>
+
+    <label>预计时长：
+      <input type="text" name="duration" placeholder="例如：2小时">
+    </label>
+
+    <label>申请理由：
+      <textarea name="reason" rows="4" placeholder="认真写下你想和我约会的理由吧～"></textarea>
+    </label>
+
+    <label>加分项：</label>
+    <div class="checkbox-group" id="bonusGroup">
+      <div data-value="主动做攻略">主动做攻略</div>
+      <div data-value="负责拍照">负责拍照</div>
+      <div data-value="负责接送">负责接送</div>
+      <div data-value="请喝奶茶">请喝奶茶</div>
+      <div data-value="情绪价值拉满">情绪价值拉满</div>
+      <div data-value="全程夸我">全程夸我</div>
+    </div>
+
+    <label>费用承担：</label>
+    <div class="radio-group" id="costGroup">
+      <div data-value="你请客">你请客</div>
+      <div data-value="我请客">我请客</div>
+      <div data-value="都行">都行，先约到再说</div>
+    </div>
+
+    <label>准时承诺：
+      <input type="text" name="promise" value="本人保证不迟到、不失联、不敷衍。" readonly>
+    </label>
+
+    <button type="submit">提交审批</button>
+  </form>
+
+  <div class="approval">
+    <label>审批结果：</label>
+    <span>批准通过 / 打回重填</span>
+    <label>女朋友签字：</label>
+    <span>_________________</span>
+    <label>审批日期：</label>
+    <span>____年__月__日</span>
+  </div>
+</div>
+
+<script>
+  // 多选交互
+  function toggleActive(groupId) {
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('div').forEach(div=>{
+      div.addEventListener('click', ()=>{
+        if(groupId==='costGroup'){
+          group.querySelectorAll('div').forEach(d=>d.classList.remove('active'));
+          div.classList.add('active');
+        } else {
+          div.classList.toggle('active');
+        }
+      });
+    });
+  }
+  toggleActive('typeGroup');
+  toggleActive('bonusGroup');
+  toggleActive('costGroup');
+
+  // 表单提交
+  document.getElementById('dateForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const nickname = this.nickname.value.trim();
+    const time = this.time.value;
+    const location = this.location.value;
+    if(!nickname||!time||!location){
+      alert('昵称、时间和地点必须填写！');
+      return;
+    }
+
+    const type = Array.from(document.querySelectorAll('#typeGroup .active')).map(d=>d.dataset.value);
+    const bonus = Array.from(document.querySelectorAll('#bonusGroup .active')).map(d=>d.dataset.value);
+    const costEl = document.querySelector('#costGroup .active');
+    const cost = costEl ? costEl.dataset.value : '';
+
+    const reason = this.reason.value.trim();
+    const promise = this.promise.value;
+
+    const data = {nickname,type,time,location,duration:this.duration.value,reason,bonus,cost,promise};
+    console.log(data);
+
+    // 弹窗模拟小程序提交效果
+    alert('约会申请已发送给女朋友审批！💗\n详细信息可查看控制台。');
+  });
+</script>
+</body>
+</html>
